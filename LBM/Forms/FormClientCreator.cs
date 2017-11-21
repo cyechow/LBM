@@ -14,6 +14,7 @@ namespace LBM
         public FormClientCreator()
         {
             InitializeComponent();
+            if (DesignMode) { return; }
         }
     }
 }

@@ -120,7 +120,7 @@ namespace LBM
                 {
                     context.Connection.Open();
 
-                    var query = context.tblClients.Select(x => x.UID);
+                    var query = context.tblClients.Select(x => x.ClientId);
                     if (query.Any())
                     {
                         lClients = query.ToList();
@@ -147,7 +147,7 @@ namespace LBM
                     context.Connection.Open();
                     //SetConnectionString(context);
 
-                    var query = context.tblClients.Where(x => x.UID == clientId);
+                    var query = context.tblClients.Where(x => x.ClientId == clientId);
                     if (!query.Any())
                     {
                         var entry = new tblClient();
@@ -193,7 +193,7 @@ namespace LBM
                 using (var context = new LBDataEntities())
                 {
                     context.Connection.Open();
-                    var query = context.tblClients.Where(x => x.UID == clientId);
+                    var query = context.tblClients.Where(x => x.ClientId == clientId);
                     if (query != null && query.Any())
                     {
                         var entry = query.First();
@@ -226,7 +226,7 @@ namespace LBM
                 using (var context = new LBDataEntities())
                 {
                     context.Connection.Open();
-                    var query = context.tblClients.Where(x => x.UID == clientId);
+                    var query = context.tblClients.Where(x => x.ClientId == clientId);
                     if (query != null && query.Any())
                     {
                         var entry = query.First();
@@ -257,7 +257,7 @@ namespace LBM
                 using (var context = new LBDataEntities())
                 {
                     context.Connection.Open();
-                    var query = context.tblClients.Where(x => x.UID == clientId);
+                    var query = context.tblClients.Where(x => x.ClientId == clientId);
                     if (query != null && query.Any())
                     {
                         var entry = query.First();
@@ -288,7 +288,7 @@ namespace LBM
                     if (query != null && query.Any())
                     {
                         var entry = query.First();
-                        clientId = entry.UID;
+                        clientId = entry.ClientId;
                     }
                 }
             }

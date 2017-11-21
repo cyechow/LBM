@@ -19,9 +19,10 @@ using System.Xml.Serialization;
 [assembly: EdmSchemaAttribute()]
 #region EDM Relationship Metadata
 
+[assembly: EdmRelationshipAttribute("LBDataModel", "FK_tblOrderItems_tblClients", "tblClient", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(LBM.Data.tblClient), "tblOrderItem", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(LBM.Data.tblOrderItem), true)]
 [assembly: EdmRelationshipAttribute("LBDataModel", "FK_tblOrderSummary_tblClients", "tblClient", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(LBM.Data.tblClient), "tblOrderSummary", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(LBM.Data.tblOrderSummary), true)]
-[assembly: EdmRelationshipAttribute("LBDataModel", "FK_tblOrders_tblOrders", "tblOrderSummary", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(LBM.Data.tblOrderSummary), "tblOrder", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(LBM.Data.tblOrder), true)]
-[assembly: EdmRelationshipAttribute("LBDataModel", "FK_tblOrders_tblProducts", "tblProduct", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(LBM.Data.tblProduct), "tblOrder", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(LBM.Data.tblOrder), true)]
+[assembly: EdmRelationshipAttribute("LBDataModel", "FK_tblOrderItems_tblOrderSummary", "tblOrderSummary", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(LBM.Data.tblOrderSummary), "tblOrderItem", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(LBM.Data.tblOrderItem), true)]
+[assembly: EdmRelationshipAttribute("LBDataModel", "FK_tblOrderItems_tblProducts", "tblProduct", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(LBM.Data.tblProduct), "tblOrderItem", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(LBM.Data.tblOrderItem), true)]
 
 #endregion
 
@@ -76,6 +77,22 @@ namespace LBM.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
+        public ObjectSet<tblUser> tblUsers
+        {
+            get
+            {
+                if ((_tblUsers == null))
+                {
+                    _tblUsers = base.CreateObjectSet<tblUser>("tblUsers");
+                }
+                return _tblUsers;
+            }
+        }
+        private ObjectSet<tblUser> _tblUsers;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
         public ObjectSet<tblClient> tblClients
         {
             get
@@ -92,18 +109,18 @@ namespace LBM.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        public ObjectSet<tblOrder> tblOrders
+        public ObjectSet<tblOrderItem> tblOrderItems
         {
             get
             {
-                if ((_tblOrders == null))
+                if ((_tblOrderItems == null))
                 {
-                    _tblOrders = base.CreateObjectSet<tblOrder>("tblOrders");
+                    _tblOrderItems = base.CreateObjectSet<tblOrderItem>("tblOrderItems");
                 }
-                return _tblOrders;
+                return _tblOrderItems;
             }
         }
-        private ObjectSet<tblOrder> _tblOrders;
+        private ObjectSet<tblOrderItem> _tblOrderItems;
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -136,26 +153,18 @@ namespace LBM.Data
             }
         }
         private ObjectSet<tblProduct> _tblProducts;
-    
-        /// <summary>
-        /// No Metadata Documentation available.
-        /// </summary>
-        public ObjectSet<tblUser> tblUsers
-        {
-            get
-            {
-                if ((_tblUsers == null))
-                {
-                    _tblUsers = base.CreateObjectSet<tblUser>("tblUsers");
-                }
-                return _tblUsers;
-            }
-        }
-        private ObjectSet<tblUser> _tblUsers;
 
         #endregion
 
         #region AddTo Methods
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the tblUsers EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddTotblUsers(tblUser tblUser)
+        {
+            base.AddObject("tblUsers", tblUser);
+        }
     
         /// <summary>
         /// Deprecated Method for adding a new object to the tblClients EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
@@ -166,11 +175,11 @@ namespace LBM.Data
         }
     
         /// <summary>
-        /// Deprecated Method for adding a new object to the tblOrders EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// Deprecated Method for adding a new object to the tblOrderItems EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
-        public void AddTotblOrders(tblOrder tblOrder)
+        public void AddTotblOrderItems(tblOrderItem tblOrderItem)
         {
-            base.AddObject("tblOrders", tblOrder);
+            base.AddObject("tblOrderItems", tblOrderItem);
         }
     
         /// <summary>
@@ -187,14 +196,6 @@ namespace LBM.Data
         public void AddTotblProducts(tblProduct tblProduct)
         {
             base.AddObject("tblProducts", tblProduct);
-        }
-    
-        /// <summary>
-        /// Deprecated Method for adding a new object to the tblUsers EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
-        /// </summary>
-        public void AddTotblUsers(tblUser tblUser)
-        {
-            base.AddObject("tblUsers", tblUser);
         }
 
         #endregion
@@ -218,12 +219,14 @@ namespace LBM.Data
         /// <summary>
         /// Create a new tblClient object.
         /// </summary>
-        /// <param name="uID">Initial value of the UID property.</param>
+        /// <param name="rowId">Initial value of the RowId property.</param>
+        /// <param name="clientId">Initial value of the ClientId property.</param>
         /// <param name="clientName">Initial value of the ClientName property.</param>
-        public static tblClient CreatetblClient(global::System.Int32 uID, global::System.String clientName)
+        public static tblClient CreatetblClient(global::System.Int32 rowId, global::System.Int32 clientId, global::System.String clientName)
         {
             tblClient tblClient = new tblClient();
-            tblClient.UID = uID;
+            tblClient.RowId = rowId;
+            tblClient.ClientId = clientId;
             tblClient.ClientName = clientName;
             return tblClient;
         }
@@ -235,29 +238,53 @@ namespace LBM.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
         [DataMemberAttribute()]
-        public global::System.Int32 UID
+        public global::System.Int32 RowId
         {
             get
             {
-                return _UID;
+                return _RowId;
             }
             set
             {
-                if (_UID != value)
+                OnRowIdChanging(value);
+                ReportPropertyChanging("RowId");
+                _RowId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("RowId");
+                OnRowIdChanged();
+            }
+        }
+        private global::System.Int32 _RowId;
+        partial void OnRowIdChanging(global::System.Int32 value);
+        partial void OnRowIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 ClientId
+        {
+            get
+            {
+                return _ClientId;
+            }
+            set
+            {
+                if (_ClientId != value)
                 {
-                    OnUIDChanging(value);
-                    ReportPropertyChanging("UID");
-                    _UID = StructuralObject.SetValidValue(value);
-                    ReportPropertyChanged("UID");
-                    OnUIDChanged();
+                    OnClientIdChanging(value);
+                    ReportPropertyChanging("ClientId");
+                    _ClientId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("ClientId");
+                    OnClientIdChanged();
                 }
             }
         }
-        private global::System.Int32 _UID;
-        partial void OnUIDChanging(global::System.Int32 value);
-        partial void OnUIDChanged();
+        private global::System.Int32 _ClientId;
+        partial void OnClientIdChanging(global::System.Int32 value);
+        partial void OnClientIdChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -390,6 +417,28 @@ namespace LBM.Data
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("LBDataModel", "FK_tblOrderItems_tblClients", "tblOrderItem")]
+        public EntityCollection<tblOrderItem> tblOrderItems
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<tblOrderItem>("LBDataModel.FK_tblOrderItems_tblClients", "tblOrderItem");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<tblOrderItem>("LBDataModel.FK_tblOrderItems_tblClients", "tblOrderItem", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
         [EdmRelationshipNavigationPropertyAttribute("LBDataModel", "FK_tblOrderSummary_tblClients", "tblOrderSummary")]
         public EntityCollection<tblOrderSummary> tblOrderSummaries
         {
@@ -413,32 +462,34 @@ namespace LBM.Data
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
-    [EdmEntityTypeAttribute(NamespaceName="LBDataModel", Name="tblOrder")]
+    [EdmEntityTypeAttribute(NamespaceName="LBDataModel", Name="tblOrderItem")]
     [Serializable()]
     [DataContractAttribute(IsReference=true)]
-    public partial class tblOrder : EntityObject
+    public partial class tblOrderItem : EntityObject
     {
         #region Factory Method
     
         /// <summary>
-        /// Create a new tblOrder object.
+        /// Create a new tblOrderItem object.
         /// </summary>
         /// <param name="rowId">Initial value of the RowId property.</param>
-        /// <param name="oID">Initial value of the OID property.</param>
+        /// <param name="orderId">Initial value of the OrderId property.</param>
+        /// <param name="clientId">Initial value of the ClientId property.</param>
         /// <param name="productId">Initial value of the ProductId property.</param>
         /// <param name="quantity">Initial value of the Quantity property.</param>
         /// <param name="unitPrice">Initial value of the UnitPrice property.</param>
         /// <param name="orderClosed">Initial value of the OrderClosed property.</param>
-        public static tblOrder CreatetblOrder(global::System.Int32 rowId, global::System.Int32 oID, global::System.Int32 productId, global::System.Int32 quantity, global::System.Double unitPrice, global::System.Boolean orderClosed)
+        public static tblOrderItem CreatetblOrderItem(global::System.Int32 rowId, global::System.Int32 orderId, global::System.Int32 clientId, global::System.Int32 productId, global::System.Int32 quantity, global::System.Double unitPrice, global::System.Boolean orderClosed)
         {
-            tblOrder tblOrder = new tblOrder();
-            tblOrder.RowId = rowId;
-            tblOrder.OID = oID;
-            tblOrder.ProductId = productId;
-            tblOrder.Quantity = quantity;
-            tblOrder.UnitPrice = unitPrice;
-            tblOrder.OrderClosed = orderClosed;
-            return tblOrder;
+            tblOrderItem tblOrderItem = new tblOrderItem();
+            tblOrderItem.RowId = rowId;
+            tblOrderItem.OrderId = orderId;
+            tblOrderItem.ClientId = clientId;
+            tblOrderItem.ProductId = productId;
+            tblOrderItem.Quantity = quantity;
+            tblOrderItem.UnitPrice = unitPrice;
+            tblOrderItem.OrderClosed = orderClosed;
+            return tblOrderItem;
         }
 
         #endregion
@@ -477,24 +528,48 @@ namespace LBM.Data
         /// </summary>
         [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
         [DataMemberAttribute()]
-        public global::System.Int32 OID
+        public global::System.Int32 OrderId
         {
             get
             {
-                return _OID;
+                return _OrderId;
             }
             set
             {
-                OnOIDChanging(value);
-                ReportPropertyChanging("OID");
-                _OID = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("OID");
-                OnOIDChanged();
+                OnOrderIdChanging(value);
+                ReportPropertyChanging("OrderId");
+                _OrderId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("OrderId");
+                OnOrderIdChanged();
             }
         }
-        private global::System.Int32 _OID;
-        partial void OnOIDChanging(global::System.Int32 value);
-        partial void OnOIDChanged();
+        private global::System.Int32 _OrderId;
+        partial void OnOrderIdChanging(global::System.Int32 value);
+        partial void OnOrderIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 ClientId
+        {
+            get
+            {
+                return _ClientId;
+            }
+            set
+            {
+                OnClientIdChanging(value);
+                ReportPropertyChanging("ClientId");
+                _ClientId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("ClientId");
+                OnClientIdChanged();
+            }
+        }
+        private global::System.Int32 _ClientId;
+        partial void OnClientIdChanging(global::System.Int32 value);
+        partial void OnClientIdChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -603,16 +678,54 @@ namespace LBM.Data
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("LBDataModel", "FK_tblOrders_tblOrders", "tblOrderSummary")]
+        [EdmRelationshipNavigationPropertyAttribute("LBDataModel", "FK_tblOrderItems_tblClients", "tblClient")]
+        public tblClient tblClient
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblClient>("LBDataModel.FK_tblOrderItems_tblClients", "tblClient").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblClient>("LBDataModel.FK_tblOrderItems_tblClients", "tblClient").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<tblClient> tblClientReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblClient>("LBDataModel.FK_tblOrderItems_tblClients", "tblClient");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<tblClient>("LBDataModel.FK_tblOrderItems_tblClients", "tblClient", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("LBDataModel", "FK_tblOrderItems_tblOrderSummary", "tblOrderSummary")]
         public tblOrderSummary tblOrderSummary
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblOrderSummary>("LBDataModel.FK_tblOrders_tblOrders", "tblOrderSummary").Value;
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblOrderSummary>("LBDataModel.FK_tblOrderItems_tblOrderSummary", "tblOrderSummary").Value;
             }
             set
             {
-                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblOrderSummary>("LBDataModel.FK_tblOrders_tblOrders", "tblOrderSummary").Value = value;
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblOrderSummary>("LBDataModel.FK_tblOrderItems_tblOrderSummary", "tblOrderSummary").Value = value;
             }
         }
         /// <summary>
@@ -624,13 +737,13 @@ namespace LBM.Data
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblOrderSummary>("LBDataModel.FK_tblOrders_tblOrders", "tblOrderSummary");
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblOrderSummary>("LBDataModel.FK_tblOrderItems_tblOrderSummary", "tblOrderSummary");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<tblOrderSummary>("LBDataModel.FK_tblOrders_tblOrders", "tblOrderSummary", value);
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<tblOrderSummary>("LBDataModel.FK_tblOrderItems_tblOrderSummary", "tblOrderSummary", value);
                 }
             }
         }
@@ -641,16 +754,16 @@ namespace LBM.Data
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("LBDataModel", "FK_tblOrders_tblProducts", "tblProduct")]
+        [EdmRelationshipNavigationPropertyAttribute("LBDataModel", "FK_tblOrderItems_tblProducts", "tblProduct")]
         public tblProduct tblProduct
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblProduct>("LBDataModel.FK_tblOrders_tblProducts", "tblProduct").Value;
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblProduct>("LBDataModel.FK_tblOrderItems_tblProducts", "tblProduct").Value;
             }
             set
             {
-                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblProduct>("LBDataModel.FK_tblOrders_tblProducts", "tblProduct").Value = value;
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblProduct>("LBDataModel.FK_tblOrderItems_tblProducts", "tblProduct").Value = value;
             }
         }
         /// <summary>
@@ -662,13 +775,13 @@ namespace LBM.Data
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblProduct>("LBDataModel.FK_tblOrders_tblProducts", "tblProduct");
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<tblProduct>("LBDataModel.FK_tblOrderItems_tblProducts", "tblProduct");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<tblProduct>("LBDataModel.FK_tblOrders_tblProducts", "tblProduct", value);
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<tblProduct>("LBDataModel.FK_tblOrderItems_tblProducts", "tblProduct", value);
                 }
             }
         }
@@ -690,13 +803,15 @@ namespace LBM.Data
         /// <summary>
         /// Create a new tblOrderSummary object.
         /// </summary>
-        /// <param name="oID">Initial value of the OID property.</param>
+        /// <param name="rowId">Initial value of the RowId property.</param>
+        /// <param name="orderId">Initial value of the OrderId property.</param>
         /// <param name="clientId">Initial value of the ClientId property.</param>
         /// <param name="orderDateTime">Initial value of the OrderDateTime property.</param>
-        public static tblOrderSummary CreatetblOrderSummary(global::System.Int32 oID, global::System.Int32 clientId, global::System.Double orderDateTime)
+        public static tblOrderSummary CreatetblOrderSummary(global::System.Int32 rowId, global::System.Int32 orderId, global::System.Int32 clientId, global::System.Double orderDateTime)
         {
             tblOrderSummary tblOrderSummary = new tblOrderSummary();
-            tblOrderSummary.OID = oID;
+            tblOrderSummary.RowId = rowId;
+            tblOrderSummary.OrderId = orderId;
             tblOrderSummary.ClientId = clientId;
             tblOrderSummary.OrderDateTime = orderDateTime;
             return tblOrderSummary;
@@ -709,29 +824,53 @@ namespace LBM.Data
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
         [DataMemberAttribute()]
-        public global::System.Int32 OID
+        public global::System.Int32 RowId
         {
             get
             {
-                return _OID;
+                return _RowId;
             }
             set
             {
-                if (_OID != value)
+                OnRowIdChanging(value);
+                ReportPropertyChanging("RowId");
+                _RowId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("RowId");
+                OnRowIdChanged();
+            }
+        }
+        private global::System.Int32 _RowId;
+        partial void OnRowIdChanging(global::System.Int32 value);
+        partial void OnRowIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 OrderId
+        {
+            get
+            {
+                return _OrderId;
+            }
+            set
+            {
+                if (_OrderId != value)
                 {
-                    OnOIDChanging(value);
-                    ReportPropertyChanging("OID");
-                    _OID = StructuralObject.SetValidValue(value);
-                    ReportPropertyChanged("OID");
-                    OnOIDChanged();
+                    OnOrderIdChanging(value);
+                    ReportPropertyChanging("OrderId");
+                    _OrderId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("OrderId");
+                    OnOrderIdChanged();
                 }
             }
         }
-        private global::System.Int32 _OID;
-        partial void OnOIDChanging(global::System.Int32 value);
-        partial void OnOIDChanged();
+        private global::System.Int32 _OrderId;
+        partial void OnOrderIdChanging(global::System.Int32 value);
+        partial void OnOrderIdChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -950,18 +1089,18 @@ namespace LBM.Data
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("LBDataModel", "FK_tblOrders_tblOrders", "tblOrder")]
-        public EntityCollection<tblOrder> tblOrders
+        [EdmRelationshipNavigationPropertyAttribute("LBDataModel", "FK_tblOrderItems_tblOrderSummary", "tblOrderItem")]
+        public EntityCollection<tblOrderItem> tblOrderItems
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<tblOrder>("LBDataModel.FK_tblOrders_tblOrders", "tblOrder");
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<tblOrderItem>("LBDataModel.FK_tblOrderItems_tblOrderSummary", "tblOrderItem");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<tblOrder>("LBDataModel.FK_tblOrders_tblOrders", "tblOrder", value);
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<tblOrderItem>("LBDataModel.FK_tblOrderItems_tblOrderSummary", "tblOrderItem", value);
                 }
             }
         }
@@ -983,13 +1122,15 @@ namespace LBM.Data
         /// <summary>
         /// Create a new tblProduct object.
         /// </summary>
+        /// <param name="rowId">Initial value of the RowId property.</param>
         /// <param name="productId">Initial value of the ProductId property.</param>
         /// <param name="productName">Initial value of the ProductName property.</param>
         /// <param name="unitPrice">Initial value of the UnitPrice property.</param>
         /// <param name="stockNumber">Initial value of the StockNumber property.</param>
-        public static tblProduct CreatetblProduct(global::System.Int32 productId, global::System.String productName, global::System.Double unitPrice, global::System.Int32 stockNumber)
+        public static tblProduct CreatetblProduct(global::System.Int32 rowId, global::System.Int32 productId, global::System.String productName, global::System.Double unitPrice, global::System.Int32 stockNumber)
         {
             tblProduct tblProduct = new tblProduct();
+            tblProduct.RowId = rowId;
             tblProduct.ProductId = productId;
             tblProduct.ProductName = productName;
             tblProduct.UnitPrice = unitPrice;
@@ -1000,6 +1141,30 @@ namespace LBM.Data
         #endregion
 
         #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 RowId
+        {
+            get
+            {
+                return _RowId;
+            }
+            set
+            {
+                OnRowIdChanging(value);
+                ReportPropertyChanging("RowId");
+                _RowId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("RowId");
+                OnRowIdChanged();
+            }
+        }
+        private global::System.Int32 _RowId;
+        partial void OnRowIdChanging(global::System.Int32 value);
+        partial void OnRowIdChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -1111,18 +1276,18 @@ namespace LBM.Data
         [XmlIgnoreAttribute()]
         [SoapIgnoreAttribute()]
         [DataMemberAttribute()]
-        [EdmRelationshipNavigationPropertyAttribute("LBDataModel", "FK_tblOrders_tblProducts", "tblOrder")]
-        public EntityCollection<tblOrder> tblOrders
+        [EdmRelationshipNavigationPropertyAttribute("LBDataModel", "FK_tblOrderItems_tblProducts", "tblOrderItem")]
+        public EntityCollection<tblOrderItem> tblOrderItems
         {
             get
             {
-                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<tblOrder>("LBDataModel.FK_tblOrders_tblProducts", "tblOrder");
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<tblOrderItem>("LBDataModel.FK_tblOrderItems_tblProducts", "tblOrderItem");
             }
             set
             {
                 if ((value != null))
                 {
-                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<tblOrder>("LBDataModel.FK_tblOrders_tblProducts", "tblOrder", value);
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<tblOrderItem>("LBDataModel.FK_tblOrderItems_tblProducts", "tblOrderItem", value);
                 }
             }
         }
