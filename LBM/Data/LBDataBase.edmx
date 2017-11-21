@@ -1,0 +1,337 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="LBDataModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="LBDataModelStoreContainer">
+          <EntitySet Name="tblClients" EntityType="LBDataModel.Store.tblClients" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="tblOrders" EntityType="LBDataModel.Store.tblOrders" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="tblOrderSummary" EntityType="LBDataModel.Store.tblOrderSummary" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="tblProducts" EntityType="LBDataModel.Store.tblProducts" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="tblUsers" EntityType="LBDataModel.Store.tblUsers" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_tblOrders_tblOrderSummary" Association="LBDataModel.Store.FK_tblOrders_tblOrderSummary">
+            <End Role="tblOrderSummary" EntitySet="tblOrderSummary" />
+            <End Role="tblOrders" EntitySet="tblOrders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblOrders_tblProducts" Association="LBDataModel.Store.FK_tblOrders_tblProducts">
+            <End Role="tblProducts" EntitySet="tblProducts" />
+            <End Role="tblOrders" EntitySet="tblOrders" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblOrderSummary_tblClients" Association="LBDataModel.Store.FK_tblOrderSummary_tblClients">
+            <End Role="tblClients" EntitySet="tblClients" />
+            <End Role="tblOrderSummary" EntitySet="tblOrderSummary" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="tblClients">
+          <Key>
+            <PropertyRef Name="UID" />
+          </Key>
+          <Property Name="UID" Type="int" Nullable="false" />
+          <Property Name="ClientName" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="ContactName" Type="varchar" MaxLength="250" />
+          <Property Name="ContactEmail" Type="varchar" MaxLength="250" />
+          <Property Name="ContactPhoneNumber" Type="varchar" MaxLength="50" />
+          <Property Name="AccountOpenDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblOrders">
+          <Key>
+            <PropertyRef Name="RowId" />
+          </Key>
+          <Property Name="RowId" Type="int" Nullable="false" />
+          <Property Name="OID" Type="int" Nullable="false" />
+          <Property Name="ProductId" Type="int" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+          <Property Name="UnitPrice" Type="float" Nullable="false" />
+          <Property Name="OrderClosed" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblOrderSummary">
+          <Key>
+            <PropertyRef Name="OID" />
+          </Key>
+          <Property Name="OID" Type="int" Nullable="false" />
+          <Property Name="ClientId" Type="int" Nullable="false" />
+          <Property Name="OrderDateTime" Type="float" Nullable="false" />
+          <Property Name="OrderTotal" Type="float" />
+          <Property Name="InvoiceDateTime" Type="float" />
+          <Property Name="PaymentReceivedDateTime" Type="float" />
+          <Property Name="OrderReceivedDateTime" Type="float" />
+          <Property Name="OrderDeliveredDateTime" Type="float" />
+        </EntityType>
+        <EntityType Name="tblProducts">
+          <Key>
+            <PropertyRef Name="ProductId" />
+          </Key>
+          <Property Name="ProductId" Type="int" Nullable="false" />
+          <Property Name="ProductName" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="UnitPrice" Type="float" Nullable="false" />
+          <Property Name="StockNumber" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblUsers">
+          <Key>
+            <PropertyRef Name="RowId" />
+          </Key>
+          <Property Name="RowId" Type="int" Nullable="false" />
+          <Property Name="Username" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Password" Type="varchar" Nullable="false" MaxLength="50" />
+        </EntityType>
+        <Association Name="FK_tblOrders_tblOrderSummary">
+          <End Role="tblOrderSummary" Type="LBDataModel.Store.tblOrderSummary" Multiplicity="1" />
+          <End Role="tblOrders" Type="LBDataModel.Store.tblOrders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblOrderSummary">
+              <PropertyRef Name="OID" />
+            </Principal>
+            <Dependent Role="tblOrders">
+              <PropertyRef Name="OID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblOrders_tblProducts">
+          <End Role="tblProducts" Type="LBDataModel.Store.tblProducts" Multiplicity="1" />
+          <End Role="tblOrders" Type="LBDataModel.Store.tblOrders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblProducts">
+              <PropertyRef Name="ProductId" />
+            </Principal>
+            <Dependent Role="tblOrders">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblOrderSummary_tblClients">
+          <End Role="tblClients" Type="LBDataModel.Store.tblClients" Multiplicity="1" />
+          <End Role="tblOrderSummary" Type="LBDataModel.Store.tblOrderSummary" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblClients">
+              <PropertyRef Name="UID" />
+            </Principal>
+            <Dependent Role="tblOrderSummary">
+              <PropertyRef Name="ClientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="LBDataModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="LBDataEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="tblClients" EntityType="LBDataModel.tblClient" />
+          <EntitySet Name="tblOrders" EntityType="LBDataModel.tblOrder" />
+          <EntitySet Name="tblOrderSummaries" EntityType="LBDataModel.tblOrderSummary" />
+          <AssociationSet Name="FK_tblOrderSummary_tblClients" Association="LBDataModel.FK_tblOrderSummary_tblClients">
+            <End Role="tblClient" EntitySet="tblClients" />
+            <End Role="tblOrderSummary" EntitySet="tblOrderSummaries" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblOrders_tblOrders" Association="LBDataModel.FK_tblOrders_tblOrders">
+            <End Role="tblOrderSummary" EntitySet="tblOrderSummaries" />
+            <End Role="tblOrder" EntitySet="tblOrders" />
+          </AssociationSet>
+          <EntitySet Name="tblProducts" EntityType="LBDataModel.tblProduct" />
+          <AssociationSet Name="FK_tblOrders_tblProducts" Association="LBDataModel.FK_tblOrders_tblProducts">
+            <End Role="tblProduct" EntitySet="tblProducts" />
+            <End Role="tblOrder" EntitySet="tblOrders" />
+          </AssociationSet>
+          <EntitySet Name="tblUsers" EntityType="LBDataModel.tblUser" />
+        </EntityContainer>
+        <EntityType Name="tblClient">
+          <Key>
+            <PropertyRef Name="UID" />
+          </Key>
+          <Property Type="Int32" Name="UID" Nullable="false" />
+          <Property Type="String" Name="ClientName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="tblOrderSummaries" Relationship="LBDataModel.FK_tblOrderSummary_tblClients" FromRole="tblClient" ToRole="tblOrderSummary" />
+          <Property Type="String" Name="ContactName" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ContactEmail" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ContactPhoneNumber" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="AccountOpenDate" />
+        </EntityType>
+        <EntityType Name="tblOrder">
+          <Key>
+            <PropertyRef Name="RowId" />
+          </Key>
+          <Property Type="Int32" Name="RowId" Nullable="false" />
+          <Property Type="Int32" Name="OID" Nullable="false" />
+          <Property Type="Int32" Name="ProductId" Nullable="false" />
+          <Property Type="Int32" Name="Quantity" Nullable="false" />
+          <Property Type="Double" Name="UnitPrice" Nullable="false" />
+          <Property Type="Boolean" Name="OrderClosed" Nullable="false" />
+          <NavigationProperty Name="tblOrderSummary" Relationship="LBDataModel.FK_tblOrders_tblOrders" FromRole="tblOrder" ToRole="tblOrderSummary" />
+          <NavigationProperty Name="tblProduct" Relationship="LBDataModel.FK_tblOrders_tblProducts" FromRole="tblOrder" ToRole="tblProduct" />
+        </EntityType>
+        <EntityType Name="tblOrderSummary">
+          <Key>
+            <PropertyRef Name="OID" />
+          </Key>
+          <Property Type="Int32" Name="OID" Nullable="false" />
+          <Property Type="Int32" Name="ClientId" Nullable="false" />
+          <Property Type="Double" Name="OrderDateTime" Nullable="false" />
+          <Property Type="Double" Name="OrderTotal" />
+          <Property Type="Double" Name="InvoiceDateTime" />
+          <Property Type="Double" Name="PaymentReceivedDateTime" />
+          <Property Type="Double" Name="OrderReceivedDateTime" />
+          <Property Type="Double" Name="OrderDeliveredDateTime" />
+          <NavigationProperty Name="tblClient" Relationship="LBDataModel.FK_tblOrderSummary_tblClients" FromRole="tblOrderSummary" ToRole="tblClient" />
+          <NavigationProperty Name="tblOrders" Relationship="LBDataModel.FK_tblOrders_tblOrders" FromRole="tblOrderSummary" ToRole="tblOrder" />
+        </EntityType>
+        <Association Name="FK_tblOrderSummary_tblClients">
+          <End Type="LBDataModel.tblClient" Role="tblClient" Multiplicity="1" />
+          <End Type="LBDataModel.tblOrderSummary" Role="tblOrderSummary" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblClient">
+              <PropertyRef Name="UID" />
+            </Principal>
+            <Dependent Role="tblOrderSummary">
+              <PropertyRef Name="ClientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblOrders_tblOrders">
+          <End Type="LBDataModel.tblOrderSummary" Role="tblOrderSummary" Multiplicity="1" />
+          <End Type="LBDataModel.tblOrder" Role="tblOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblOrderSummary">
+              <PropertyRef Name="OID" />
+            </Principal>
+            <Dependent Role="tblOrder">
+              <PropertyRef Name="OID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="tblProduct">
+          <Key>
+            <PropertyRef Name="ProductId" />
+          </Key>
+          <Property Type="Int32" Name="ProductId" Nullable="false" />
+          <Property Type="String" Name="ProductName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Double" Name="UnitPrice" Nullable="false" />
+          <Property Type="Int32" Name="StockNumber" Nullable="false" />
+          <NavigationProperty Name="tblOrders" Relationship="LBDataModel.FK_tblOrders_tblProducts" FromRole="tblProduct" ToRole="tblOrder" />
+        </EntityType>
+        <Association Name="FK_tblOrders_tblProducts">
+          <End Type="LBDataModel.tblProduct" Role="tblProduct" Multiplicity="1" />
+          <End Type="LBDataModel.tblOrder" Role="tblOrder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblProduct">
+              <PropertyRef Name="ProductId" />
+            </Principal>
+            <Dependent Role="tblOrder">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="tblUser">
+          <Key>
+            <PropertyRef Name="RowId" />
+          </Key>
+          <Property Type="Int32" Name="RowId" Nullable="false" />
+          <Property Type="String" Name="Username" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Password" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="LBDataModelStoreContainer" CdmEntityContainer="LBDataEntities">
+          <EntitySetMapping Name="tblClients">
+            <EntityTypeMapping TypeName="LBDataModel.tblClient">
+              <MappingFragment StoreEntitySet="tblClients">
+                <ScalarProperty Name="AccountOpenDate" ColumnName="AccountOpenDate" />
+                <ScalarProperty Name="ContactPhoneNumber" ColumnName="ContactPhoneNumber" />
+                <ScalarProperty Name="ContactEmail" ColumnName="ContactEmail" />
+                <ScalarProperty Name="ContactName" ColumnName="ContactName" />
+                <ScalarProperty Name="ClientName" ColumnName="ClientName" />
+                <ScalarProperty Name="UID" ColumnName="UID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblOrders">
+            <EntityTypeMapping TypeName="LBDataModel.tblOrder">
+              <MappingFragment StoreEntitySet="tblOrders">
+                <ScalarProperty Name="OrderClosed" ColumnName="OrderClosed" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="OID" ColumnName="OID" />
+                <ScalarProperty Name="RowId" ColumnName="RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblOrderSummaries">
+            <EntityTypeMapping TypeName="LBDataModel.tblOrderSummary">
+              <MappingFragment StoreEntitySet="tblOrderSummary">
+                <ScalarProperty Name="OrderDeliveredDateTime" ColumnName="OrderDeliveredDateTime" />
+                <ScalarProperty Name="OrderReceivedDateTime" ColumnName="OrderReceivedDateTime" />
+                <ScalarProperty Name="PaymentReceivedDateTime" ColumnName="PaymentReceivedDateTime" />
+                <ScalarProperty Name="InvoiceDateTime" ColumnName="InvoiceDateTime" />
+                <ScalarProperty Name="OrderTotal" ColumnName="OrderTotal" />
+                <ScalarProperty Name="OrderDateTime" ColumnName="OrderDateTime" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="OID" ColumnName="OID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblProducts">
+            <EntityTypeMapping TypeName="LBDataModel.tblProduct">
+              <MappingFragment StoreEntitySet="tblProducts">
+                <ScalarProperty Name="StockNumber" ColumnName="StockNumber" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblUsers">
+            <EntityTypeMapping TypeName="LBDataModel.tblUser">
+              <MappingFragment StoreEntitySet="tblUsers">
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
+                <ScalarProperty Name="RowId" ColumnName="RowId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="LBDataBase">
+        <EntityTypeShape EntityType="LBDataModel.tblClient" Width="1.5" PointX="3.875" PointY="1.75" Height="1.5956835937499996" />
+        <EntityTypeShape EntityType="LBDataModel.tblOrder" Width="1.5" PointX="8.375" PointY="1.375" Height="2.3648893229166674" />
+        <EntityTypeShape EntityType="LBDataModel.tblOrderSummary" Width="1.5" PointX="6.125" PointY="1.125" Height="2.9417936197916674" />
+        <AssociationConnector Association="LBDataModel.FK_tblOrderSummary_tblClients" >
+          <ConnectorPoint PointX="5.375" PointY="2.547841796875" />
+          <ConnectorPoint PointX="6.125" PointY="2.547841796875" />
+        </AssociationConnector>
+        <AssociationConnector Association="LBDataModel.FK_tblOrders_tblOrders" >
+          <ConnectorPoint PointX="7.625" PointY="2.6535953776041667" />
+          <ConnectorPoint PointX="8.375" PointY="2.6535953776041667" />
+        </AssociationConnector>
+        <EntityTypeShape EntityType="LBDataModel.tblProduct" Width="1.5" PointX="0.75" PointY="3.875" Height="1.9802864583333317" />
+        <AssociationConnector Association="LBDataModel.FK_tblOrders_tblProducts" >
+          <ConnectorPoint PointX="2.25" PointY="4.9922900390625" />
+          <ConnectorPoint PointX="9.125" PointY="4.9922900390625" />
+          <ConnectorPoint PointX="9.125" PointY="3.9321907552083331" />
+        </AssociationConnector>
+        <EntityTypeShape EntityType="LBDataModel.tblUser" Width="1.5" PointX="0.75" PointY="0.75" Height="1.5956835937500031" />
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>
