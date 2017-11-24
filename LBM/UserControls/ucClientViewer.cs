@@ -67,12 +67,20 @@ namespace LBM
             // TBD: Save any changes made to the client details to the DB.
             LbClient clientDataUpdated = RetrieveClientDataFromDisplay();
             int clientId = Convert.ToInt32(this.nudClientId.Value);
-            if (clientDataUpdated != null)
+            if (clientDataUpdated == null) { return; }
+                            
+            SaveClientData(clientId, clientDataUpdated);
+        }
+        private void SaveClientData(int clientId, LbClient clientData)
+        {
+            try
             {
-                if (!dbInterface.SendClientDataToDb(clientId, clientDataUpdated))
-                {
-                    MessageBox.Show(dbInterface.ErrorMessage, "DB Storage Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                dbInterface.SendClientDataToDb(clientId, clientData);
+            }
+            catch (Exception exc)
+            {
+                string errMsg = ExceptionHandler.GetExceptionDetails(exc);
+                MessageBox.Show(dbInterface.ErrorMessage, "DB Storage Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
