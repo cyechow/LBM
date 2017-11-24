@@ -71,7 +71,7 @@
             this.btnLogin.TabIndex = 3;
             this.btnLogin.Text = "Login";
             this.btnLogin.UseVisualStyleBackColor = false;
-            this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
+            this.btnLogin.Click += new System.EventHandler(this.LoginToProgram);
             // 
             // lblPassword
             // 
@@ -106,7 +106,7 @@
             this.btnExit.TabIndex = 4;
             this.btnExit.Text = "X";
             this.btnExit.UseVisualStyleBackColor = true;
-            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
+            this.btnExit.Click += new System.EventHandler(this.ExitProgram);
             // 
             // checkBox1
             // 

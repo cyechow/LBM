@@ -18,6 +18,11 @@ namespace LBM
         private string dbUsername = "lbadmin";
         private string dbUserPassword = "lbadmin";
 
+        private string errMsg = "";
+        public string ErrorMessage { get { return errMsg; } }
+
+        public bool IsUserAuthenticated = false;
+
         #region Constructor
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -39,8 +44,6 @@ namespace LBM
         {
             context.Connection.ConnectionString = String.Format("datasource={0};initial catalog=LBData;integrated security=False;user id={1};password={2};MultipleActiveResultSets=True;App=EntityFramework",
                 dbSourceAddress, dbUsername, dbUserPassword);
-            
-            //context.Connection.ConnectionString = String.Format("Data Source={0};Initial Catalog=LBData;Persist Security Info=True;User ID={1}", m_DbSource, m_DbUser, m_DbPassword);
         }
         private void SetConnectionString(IDbConnection conn)
         {
@@ -48,257 +51,261 @@ namespace LBM
                 dbSourceAddress, dbUsername, dbUserPassword);
 
             conn.ConnectionString = strConn;
-            //conn.ConnectionString = String.Format("Data Source={0};Initial Catalog=LBData;Persist Security Info=True;User ID={1}", m_DbSource, m_DbUser, m_DbPassword);
-            // conn.ConnectionString = String.Format("datasource={0};initial catalog=LBData;integrated security=False;user id={1};password={2};MultipleActiveResultSets=True;App=EntityFramework",
-                //m_DbSource, m_DbUser, m_DbPassword);
-
         }
 
-        public bool AuthenticateUser(string username, string password, out string errMsg)
+        public void AuthenticateUser(string username, string password)
         {
-            errMsg = String.Empty;
             try
             {
-                using (var context = new LBDataEntities())
-                {
-                    context.Connection.Open();
-                    //SetConnectionString(context.Connection);
-                    var query = context.tblUsers.Where(x => x.Username.Equals(username));
-                    var entry = query.FirstOrDefault();
+                IsUserAuthenticated = IsValidUserCredentials(username, password);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        private bool IsValidUserCredentials(string username, string password)
+        {
+            using (var context = new LBDataEntities())
+            {
+                context.Connection.Open();
+                var query = context.tblUsers.Where(x => x.Username.Equals(username));
+                var entry = query.FirstOrDefault();
 
-                    if (query != null && query.Any())
-                    {
-                        return entry.Password == password;
-                    }
+                if (query != null && query.Any())
+                {
+                   return entry.Password == password;
                 }
             }
-            catch (DbEntityValidationException dbExc)
-            {
-                errMsg = dbExc.Message;
-            }
-            catch (Exception exc)
-            {
-                errMsg = exc.Message;
-            }
-            
+
             return false;
         }
 
-        public ReadOnlyCollection<string> QueryClientNameList()
+        public ReadOnlyCollection<string> GetClientNames()
         {
-            List<string> lClients = new List<string>();
             try
             {
-                using (var context = new LBDataEntities())
-                {
-                    context.Connection.Open();
-                    //SetConnectionString(context);
-
-                    var query = context.tblClients.Select(x => x.ClientName);
-                    if (query.Any())
-                    {
-                        lClients = query.ToList();
-                    }
-                }
-
+                List<string> clientNames = QueryClientNames();
+                return clientNames.AsReadOnly();
             }
-            catch (Exception exc)
+            catch (Exception)
             {
-                Console.WriteLine(exc.Message);
-                Console.WriteLine(exc.StackTrace);
+                throw;
+            }
+        }
+        private List<string> QueryClientNames()
+        {
+            List<string> clientNames = new List<string>();
+            using (var context = new LBDataEntities())
+            {
+                context.Connection.Open();
+
+                var query = context.tblClients.Select(x => x.ClientName);
+                if (query.Any())
+                {
+                    clientNames = query.ToList();
+                }
             }
 
-            return lClients.AsReadOnly();
+            return clientNames;
         }
 
-        public ReadOnlyCollection<int> QueryClientIdList()
+        public ReadOnlyCollection<int> GetClientIds()
         {
-            List<int> lClients = new List<int>();
             try
             {
-                using (var context = new LBDataEntities())
-                {
-                    context.Connection.Open();
+                List<int> clientIds = QueryClientIds();
+                return clientIds.AsReadOnly();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        private List<int> QueryClientIds()
+        {
+            List<int> clientIds = new List<int>();
+            using (var context = new LBDataEntities())
+            {
+                context.Connection.Open();
 
-                    var query = context.tblClients.Select(x => x.ClientId);
-                    if (query.Any())
-                    {
-                        lClients = query.ToList();
-                    }
+                var query = context.tblClients.Select(x => x.ClientId);
+                if (query.Any())
+                {
+                    clientIds = query.ToList();
+                }
+            }
+            return clientIds;
+        }
+
+        public void SendClientDataToDb(int clientId, LbClient clientProfile)
+        {
+            try
+            {
+                StoreClientInfo(clientId, clientProfile);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        private void StoreClientInfo(int clientId, LbClient clientProfile)
+        {
+            using (var context = new LBDataEntities())
+            {
+                context.Connection.Open();
+
+                var query = context.tblClients.Where(x => x.ClientId == clientId);
+                if (!query.Any())
+                {
+                    var entry = new tblClient();
+                    entry.ClientName = clientProfile.ClientName;
+                    entry.ContactName = clientProfile.ContactName;
+                    entry.ContactEmail = clientProfile.ContactEmail;
+                    entry.ContactPhoneNumber = clientProfile.ContactPhoneNumber;
+
+                    entry.AccountOpenDate = clientProfile.AccountOpened;
+
+                    context.tblClients.AddObject(entry);
+                }
+                else
+                {
+                    var entry = query.First();
+                    entry.ClientName = clientProfile.ClientName;
+                    entry.ContactName = clientProfile.ContactName;
+                    entry.ContactEmail = clientProfile.ContactEmail;
+                    entry.ContactPhoneNumber = clientProfile.ContactPhoneNumber;
+
+                    entry.AccountOpenDate = clientProfile.AccountOpened;
                 }
 
+                context.SaveChanges();
             }
-            catch (Exception exc)
-            {
-                Console.WriteLine(exc.Message);
-                Console.WriteLine(exc.StackTrace);
-            }
-
-            return lClients.AsReadOnly();
         }
-        public bool SaveClientDataToDB(int clientId, LbClient clientProfile, out string errMsg)
+
+        public void RemoveClient(int clientId)
         {
-            errMsg = "";
-            
             try
             {
-                using (var context = new LBDataEntities())
+                DeleteClientOrderItems(clientId);
+                DeleteClientOrders(clientId);
+                DeleteClient(clientId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        private void DeleteClient(int clientId)
+        {
+            using (var context = new LBDataEntities())
+            {
+                context.Connection.Open();
+                var query = context.tblClients.Where(x => x.ClientId == clientId);
+                if (query != null && query.Any())
                 {
-                    context.Connection.Open();
-                    //SetConnectionString(context);
-
-                    var query = context.tblClients.Where(x => x.ClientId == clientId);
-                    if (!query.Any())
-                    {
-                        var entry = new tblClient();
-                        entry.ClientName = clientProfile.ClientName;
-                        entry.ContactName = clientProfile.ContactName;
-                        entry.ContactEmail = clientProfile.ContactEmail;
-                        entry.ContactPhoneNumber = clientProfile.ContactPhoneNumber;
-
-                        entry.AccountOpenDate = clientProfile.AccountOpened;
-
-                        context.tblClients.AddObject(entry);
-                    }
-                    else
-                    {
-                        var entry = query.First();
-                        entry.ClientName = clientProfile.ClientName;
-                        entry.ContactName = clientProfile.ContactName;
-                        entry.ContactEmail = clientProfile.ContactEmail;
-                        entry.ContactPhoneNumber = clientProfile.ContactPhoneNumber;
-
-                        entry.AccountOpenDate = clientProfile.AccountOpened;
-                    }
-                        
+                    var entry = query.First();
+                    context.tblClients.DeleteObject(entry);
                     context.SaveChanges();
                 }
-            }
-            catch (Exception exc)
-            {
-                errMsg = exc.Message;
-                errMsg += Environment.NewLine;
-                errMsg += exc.StackTrace;
-                return false;
-            }
-
-            return true;
-        }
-        public bool DeleteClientFromDB(int clientId, out string errMsg)
-        {
-            errMsg = "";
-
-            try
-            {
-                using (var context = new LBDataEntities())
+                else
                 {
-                    context.Connection.Open();
-                    var query = context.tblClients.Where(x => x.ClientId == clientId);
-                    if (query != null && query.Any())
-                    {
-                        var entry = query.First();
-                        context.tblClients.DeleteObject(entry);
-                        context.SaveChanges();
-                    }
-                    else
-                    {
-                        errMsg = String.Format("Could not find client {0} in the DB.", clientId);
-                    }
+                    errMsg = String.Format("Could not find client {0} in the DB.", clientId);
                 }
             }
-            catch (Exception exc)
-            {
-                errMsg = exc.Message;
-                errMsg += Environment.NewLine;
-                errMsg += exc.StackTrace;
-                return false;
-            }
-
-            return true;
+        }
+        private void DeleteClientOrders(int clientId)
+        {
+            // TODO
+        }
+        private void DeleteClientOrderItems(int clientId)
+        {
+            // TODO
         }
 
-        public LbClient RetrieveClientDetailsFromDb(int clientId)
+        public LbClient GetClientProfile(int clientId)
         {
-            LbClient clientData = new LbClient(String.Empty, DateTime.Now);
-            string errMsg = "";
             try
             {
-                using (var context = new LBDataEntities())
+                return QueryClientProfile(clientId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        private LbClient QueryClientProfile(int clientId)
+        {
+            LbClient clientProfile = new LbClient(String.Empty, DateTime.Now);
+            using (var context = new LBDataEntities())
+            {
+                context.Connection.Open();
+                var query = context.tblClients.Where(x => x.ClientId == clientId);
+                if (query != null && query.Any())
                 {
-                    context.Connection.Open();
-                    var query = context.tblClients.Where(x => x.ClientId == clientId);
-                    if (query != null && query.Any())
-                    {
-                        var entry = query.First();
-                        clientData.ClientName = entry.ClientName;
-                        clientData.ContactName = entry.ContactName;
-                        clientData.ContactEmail = entry.ContactEmail;
-                        clientData.ContactPhoneNumber = entry.ContactPhoneNumber;
-                        if (entry.AccountOpenDate.HasValue) { clientData.AccountOpened = entry.AccountOpenDate.Value; }
-                    }
+                    var entry = query.First();
+                    clientProfile.ClientName = entry.ClientName;
+                    clientProfile.ContactName = entry.ContactName;
+                    clientProfile.ContactEmail = entry.ContactEmail;
+                    clientProfile.ContactPhoneNumber = entry.ContactPhoneNumber;
+                    if (entry.AccountOpenDate.HasValue) { clientProfile.AccountOpened = entry.AccountOpenDate.Value; }
                 }
             }
-            catch (Exception exc)
-            {
-                errMsg = exc.Message;
-                errMsg += Environment.NewLine;
-                errMsg += exc.StackTrace;               
-            }
 
-            return clientData;
+            return clientProfile;
         }
 
-        public string RetrieveClientNameFromDb(int clientId)
+        public string GetClientName(int clientId)
+        {
+            try
+            {
+                return QueryClientName(clientId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        private string QueryClientName(int clientId)
         {
             string clientName = "Unknown";
-            string errMsg = "";
-            try
+            using (var context = new LBDataEntities())
             {
-                using (var context = new LBDataEntities())
+                context.Connection.Open();
+                var query = context.tblClients.Where(x => x.ClientId == clientId);
+                if (query != null && query.Any())
                 {
-                    context.Connection.Open();
-                    var query = context.tblClients.Where(x => x.ClientId == clientId);
-                    if (query != null && query.Any())
-                    {
-                        var entry = query.First();
-                        clientName = entry.ClientName;
-                    }
+                    var entry = query.First();
+                    clientName = entry.ClientName;
                 }
             }
-            catch (Exception exc)
-            {
-                errMsg = exc.Message;
-                errMsg += Environment.NewLine;
-                errMsg += exc.StackTrace;               
-            }
-
             return clientName;
         }
 
-        public int RetrieveClientIdFromDb(string strClientName)
+        public int GetClientId(string clientName)
         {
-            int clientId = -1;
-            string errMsg = "";
             try
             {
-                using (var context = new LBDataEntities())
+                return QueryClientId(clientName);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        private int QueryClientId(string clientName)
+        {
+            int clientId = -1;
+            using (var context = new LBDataEntities())
+            {
+                context.Connection.Open();
+                var query = context.tblClients.Where(x => x.ClientName == clientName);
+                if (query != null && query.Any())
                 {
-                    context.Connection.Open();
-                    var query = context.tblClients.Where(x => x.ClientName == strClientName);
-                    if (query != null && query.Any())
-                    {
-                        var entry = query.First();
-                        clientId = entry.ClientId;
-                    }
+                    var entry = query.First();
+                    clientId = entry.ClientId;
                 }
             }
-            catch (Exception exc)
-            {
-                errMsg = exc.Message;
-                errMsg += Environment.NewLine;
-                errMsg += exc.StackTrace;               
-            }
-
             return clientId;
         }
     }

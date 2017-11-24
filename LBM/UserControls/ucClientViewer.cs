@@ -33,12 +33,12 @@ namespace LBM
         }
         private void PopulateClientList()
         {
-            ReadOnlyCollection<int> lClientIds = dbInterface.QueryClientIdList();
+            ReadOnlyCollection<int> lClientIds = dbInterface.GetClientIds();
             if (lClientIds.Count == 0) { return; }
 
             foreach (int clientId in lClientIds)
             {
-                string clientName = dbInterface.RetrieveClientNameFromDb(clientId);
+                string clientName = dbInterface.GetClientName(clientId);
                 if (clientName == "Unknown") { clientName = clientId.ToString(); }
                 this.lbClients.Items.Add(clientName);
             }
@@ -69,10 +69,9 @@ namespace LBM
             int clientId = Convert.ToInt32(this.nudClientId.Value);
             if (clientDataUpdated != null)
             {
-                string errMsg = "";
-                if (!dbInterface.SaveClientDataToDB(clientId, clientDataUpdated, out errMsg))
+                if (!dbInterface.SendClientDataToDb(clientId, clientDataUpdated))
                 {
-                    MessageBox.Show(errMsg, "DB Storage Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(dbInterface.ErrorMessage, "DB Storage Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -88,7 +87,7 @@ namespace LBM
             if (idxClientSelected == this.lbClients.SelectedIndex || this.lbClients.SelectedIndex < 0) { return; }
             idxClientSelected = this.lbClients.SelectedIndex;
 
-            int clientId = dbInterface.RetrieveClientIdFromDb(this.lbClients.SelectedItem.ToString());
+            int clientId = dbInterface.GetClientId(this.lbClients.SelectedItem.ToString());
 
             UpdateClientDataDisplay(clientId);
         }
@@ -111,7 +110,7 @@ namespace LBM
                 return;
             }
 
-            LbClient clientData = dbInterface.RetrieveClientDetailsFromDb(clientId);
+            LbClient clientData = dbInterface.GetClientProfile(clientId);
 
             this.nudClientId.Value = clientId;
             this.tbClientNameFull.Text = clientData.ClientName;

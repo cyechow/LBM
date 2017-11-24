@@ -13,53 +13,84 @@ namespace LBM
 {
     public partial class FormLogin : Form
     {
-        private string m_UserName = String.Empty;
-        private string m_Password = String.Empty;
+        private string userName = String.Empty;
+        private string userPassword = String.Empty;
 
-        private FormMain m_Main;
+        private DbInterface dbInterface = DbInterface.Instance;
+
+        private FormMain mainInterface;
 
         public FormLogin()
         {
             InitializeComponent();
             if (DesignMode) return;
 
-            m_Main = new FormMain();
-            m_Main.FormClosing += new FormClosingEventHandler(m_Main_FormClosing);
+            InitializeInterface();
         }
 
-        private void m_Main_FormClosing(object sender, FormClosingEventArgs e)
+        private void InitializeInterface()
+        {
+            mainInterface = new FormMain();
+            mainInterface.FormClosing += new FormClosingEventHandler(HandleMainUIClosing);
+        }
+
+        /// <summary>
+        /// Exit from program handled only in the login form so main UI close event is canceled and login UI is shown.
+        /// </summary>
+        private void HandleMainUIClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
-            m_Main.Hide();
+            mainInterface.Hide();
             this.Show();
         }
 
-        private void btnExit_Click(object sender, EventArgs e)
+        private void ExitProgram(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        private void LoginToProgram(object sender, EventArgs e)
         {
-            this.m_UserName = this.tbUsername.Text;
-            this.m_Password = this.tbPassword.Text;
+            GetUserCredentials();
+            ValidateUserCredentials();
+            DisplayMainInterface();
+        }
 
-            DbInterface dbInterface = DbInterface.Instance;
-            string errMsg = String.Empty;
-            if (!dbInterface.AuthenticateUser(m_UserName, m_Password, out errMsg))
+        private void GetUserCredentials()
+        {
+            this.userName = this.tbUsername.Text;
+            this.userPassword = this.tbPassword.Text;
+        }
+
+        private void ValidateUserCredentials()
+        {
+            try
             {
-                DialogResult result = MessageBox.Show(errMsg, "Login Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
-
-                if (result == System.Windows.Forms.DialogResult.Cancel)
-                {
-                    this.Close();
-                }
+                dbInterface.AuthenticateUser(this.userName, this.userPassword);
             }
-            else
+            catch (Exception exc)
             {
-                this.Hide();
-                m_Main.SetAppUser(this.m_UserName);
-                m_Main.Show();
+                string errMsg = ExceptionHandler.GetExceptionDetails(exc);
+                ShowLoginErrorRetryPopup(errMsg);
+            }
+        }
+
+        private void DisplayMainInterface()
+        {
+            if (!dbInterface.IsUserAuthenticated) { return; }
+
+            this.Hide();
+            mainInterface.SetAppUser(this.userName);
+            mainInterface.Show();
+        }
+
+        private void ShowLoginErrorRetryPopup(string errMsg)
+        {
+            DialogResult result = MessageBox.Show(errMsg, "Login Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+
+            if (result == System.Windows.Forms.DialogResult.Cancel)
+            {
+                this.Close();
             }
         }
     }

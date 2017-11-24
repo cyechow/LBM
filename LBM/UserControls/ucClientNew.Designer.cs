@@ -134,7 +134,7 @@
             this.btnCreateClient.TabIndex = 5;
             this.btnCreateClient.Text = "Create Client";
             this.btnCreateClient.UseVisualStyleBackColor = true;
-            this.btnCreateClient.Click += new System.EventHandler(this.btnCreateClient_Click);
+            this.btnCreateClient.Click += new System.EventHandler(this.CreateNewClient);
             // 
             // ucClientNew
             // 
